@@ -1,16 +1,21 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import random
 from math import inf
 from scipy.spatial.distance import cityblock, euclidean
+from sklearn.datasets.samples_generator import make_blobs
 
 
-def k_means(r: int, D, init: str, dist: str):
+def k_means(r: int, D: np.ndarray, init: str, dist: str):
     X = initClusters(r, D, init, dist)
-
+    iterations = 0
     old_centroids = None
-    while True:
+    while iterations < 1000:
+        print(iterations)
+        iterations += 1
         Y = clusterAssignments(X, D, dist)
         X = centroidsUpdate(Y, D)
+        print("joe mama")
 
         # stopping criterion is convergence
         if np.array_equal(X, old_centroids):
@@ -18,6 +23,7 @@ def k_means(r: int, D, init: str, dist: str):
         else:
             old_centroids = X
 
+    print(iterations)
     return X, Y
 
 
@@ -46,7 +52,7 @@ def initClusters(r: int, D, init: str, dist="euclidean") -> np.ndarray:
 
     elif init == "forgy":
         # choose r random points from D
-        return np.array(random.sample(D, r))
+        return np.array(random.sample(D.tolist(), r))
 
     else:
         return k_meanspp(r, D, dist)
@@ -74,7 +80,7 @@ def k_meanspp(r: int, D: np.ndarray, dist: str) -> np.ndarray:
 
 # update the centroids
 def centroidsUpdate(Y, D) -> np.ndarray:
-    centroids = np.zeros(shape=(len(Y), len(D)))
+    centroids = np.zeros(shape=(len(Y), len(D[0])))
     Y = np.matrix.transpose(Y)  # n*r matrix -> r*n matrix for convenience
     index = 0
     for cluster in Y:  # looping over each cluster
@@ -88,6 +94,9 @@ def centroidsUpdate(Y, D) -> np.ndarray:
             for i in range(len(D[data])):
                 sum_points[i] += D[data][i]
 
+        # if this cluster has no points assigned to it, we continue
+        if (len(this_cluster)) == 0:
+            continue
         sum_points = [x / len(this_cluster) for x in sum_points]
         centroids[index] = np.array(sum_points)
         index += 1
@@ -96,13 +105,15 @@ def centroidsUpdate(Y, D) -> np.ndarray:
 
 
 def clusterAssignments(X, D, dist) -> np.ndarray:
-    distance = inf
-    cluster = 0
     Y = np.zeros(shape=(len(D), len(X)))
-    for i in range(0, len(D)):
-        for j in range(0, len(X)):
+
+    for i in range(len(D)):
+        distance = inf
+        cluster = 0
+        for j in range(len(X)):
             if dist == "euclidean":
                 dist = euclidean(np.array(D[i]), np.array(X[j]))
+
             else:
                 dist = cityblock(np.array(D[i]), np.array(X[j]))
 
@@ -111,14 +122,30 @@ def clusterAssignments(X, D, dist) -> np.ndarray:
                 cluster = j
         Y[i][cluster] = 1
 
+
     return Y
 
 
-X = np.array([
-    [1, 3, 0],
-    [4, 5, 0]
-])
+def main():
+    # generate data
+    X, y = make_blobs(n_samples=15000, centers=5, cluster_std=[3.9, 1.7, 1.5, 5.9, 2.8], n_features=2, random_state=10,
+                      center_box=(-35.0, 25.0))
+    # X = np.vstack((X[y == 0][:5000], X[y == 1][:4500],
+    #                X[y == 2][:4000], X[y == 3][:2000], X[y == 4][:1000]))
+    # y = np.hstack((y[y == 0][:5000], y[y == 1][:4500],
+    #                y[y == 2][:4000], y[y == 3][:2000], y[y == 4][:1000]))
+    X2, y2 = make_blobs(n_samples=3500, cluster_std=[1.0, 2.5, 0.5],
+                        random_state=170, center_box=(-15.0, 5.0))
 
-D = np.array([[3, 4, 0], [1, 2, 0], [1, 2, 3], [65, 23, 1], [34, 12, 3], [12, 24, 0]])
+    x = X[:, 0]
+    y = X[:, 1]
+    plt.scatter(x, y)
 
-print(k_meanspp(3, D, 'euclidean'))
+    X1, Y = k_means(5, X, '++', 'euclidean')
+    centroids_x = X1[:, 0]
+    centroids_y = X1[:, 1]
+    plt.scatter(centroids_x, centroids_y)
+    plt.show()
+
+
+main()
