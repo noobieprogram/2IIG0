@@ -96,38 +96,16 @@ def centroidsUpdate(Y, D) -> np.ndarray:
 
 
 def clusterAssignments(X, D, dist) -> np.ndarray:
-    if dist == "euclidean":
-        return euclidean_centroids(X, D)
-    else:
-        return manhattan_centroids(X, D)
-
-
-# calculate closest centroid for all points using
-# manhattan distance
-def manhattan_centroids(X, D):
     distance = inf
     cluster = 0
     Y = np.zeros(shape=(len(D), len(X)))
     for i in range(0, len(D)):
         for j in range(0, len(X)):
-            dist = cityblock(np.array(D[i]), np.array(X[j]))
-            if dist < distance:
-                distance = dist
-                cluster = j
-        Y[i][cluster] = 1
+            if dist == "euclidean":
+                dist = euclidean(np.array(D[i]), np.array(X[j]))
+            else:
+                dist = cityblock(np.array(D[i]), np.array(X[j]))
 
-    return Y
-
-
-# calculate closest centroid for all points using
-# euclidean distance
-def euclidean_centroids(X, D):
-    distance = inf
-    cluster = 0
-    Y = np.zeros(shape=(len(D), len(X)))
-    for i in range(0, len(D)):
-        for j in range(0, len(X)):
-            dist = euclidean(np.array(D[i]), np.array(X[j]))
             if dist < distance:
                 distance = dist
                 cluster = j

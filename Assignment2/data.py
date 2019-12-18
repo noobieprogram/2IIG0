@@ -9,6 +9,38 @@ y = np.hstack((y[y == 0][:5000], y[y == 1][:4500],
                y[y == 2][:4000], y[y == 3][:2000], y[y == 4][:1000]))
 
 
-for nigga in X:
-    print(len(nigga))
-    break
+
+# ---------------------------------- # old code
+
+# calculate closest centroid for all points using
+# manhattan distance
+def manhattan_centroids(X, D):
+    distance = inf
+    cluster = 0
+    Y = np.zeros(shape=(len(D), len(X)))
+    for i in range(0, len(D)):
+        for j in range(0, len(X)):
+            dist = cityblock(np.array(D[i]), np.array(X[j]))
+            if dist < distance:
+                distance = dist
+                cluster = j
+        Y[i][cluster] = 1
+
+    return Y
+
+
+# calculate closest centroid for all points using
+# euclidean distance
+def euclidean_centroids(X, D):
+    distance = inf
+    cluster = 0
+    Y = np.zeros(shape=(len(D), len(X)))
+    for i in range(0, len(D)):
+        for j in range(0, len(X)):
+            dist = euclidean(np.array(D[i]), np.array(X[j]))
+            if dist < distance:
+                distance = dist
+                cluster = j
+        Y[i][cluster] = 1
+
+    return Y
