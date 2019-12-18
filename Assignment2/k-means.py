@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import scipy
 from math import inf
 from scipy.spatial.distance import cityblock, euclidean
 
@@ -7,13 +8,13 @@ from scipy.spatial.distance import cityblock, euclidean
 def k_means(r: int, D, init: str, dist: str):
     X = initClusters(r, D, init, dist)
 
-    # stopping criteria is convergence
     old_centroids = None
     while True:
         Y = clusterAssignments(X, D, dist)
         X = centroidsUpdate(Y, D)
 
-        if X == old_centroids:
+        # stopping criterion is convergence
+        if np.array_equal(X, old_centroids):
             break
         else:
             old_centroids = X
@@ -46,17 +47,28 @@ def initClusters(r: int, D, init: str, dist="euclidean") -> np.ndarray:
 
     elif init == "forgy":
         # choose r random points from D
-        return random.sample(D, r)
+        return np.array(random.sample(D, r))
 
     else:
         return k_meanspp(r, D, dist)
 
 
 def k_meanspp(r: int, D, dist):
-    s = 1
-    X = random.choice(D)
+    C = [random.choice(D)]
 
-    return None
+    for k in range(1, r):
+        D2 = np.array([min([scipy.inner(c - x, c - x) for c in C]) for x in D])
+        probs = D2 / D2.sum()
+        cumulative_prob = probs.cumsum()
+        r = scipy.rand()
+        for j, p in enumerate(cumulative_prob):
+            if r < p:
+                i = j
+                break
+        C.append(D[i])
+
+    return np.array(C)
+
 
 # update the centroids
 def centroidsUpdate(Y, D) -> np.ndarray:
