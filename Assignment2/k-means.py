@@ -1,6 +1,5 @@
 import numpy as np
 import random
-import scipy
 from math import inf
 from scipy.spatial.distance import cityblock, euclidean
 
@@ -53,14 +52,17 @@ def initClusters(r: int, D, init: str, dist="euclidean") -> np.ndarray:
         return k_meanspp(r, D, dist)
 
 
-def k_meanspp(r: int, D, dist):
+def k_meanspp(r: int, D: np.ndarray, dist: str) -> np.ndarray:
     C = [random.choice(D)]
 
     for k in range(1, r):
-        D2 = np.array([min([scipy.inner(c - x, c - x) for c in C]) for x in D])
+        if dist == "euclidean":
+            D2 = np.array([min([euclidean(c, x) for c in C]) for x in D])
+        else:
+            D2 = np.array([min([cityblock(c, x) for c in C]) for x in D])
         probs = D2 / D2.sum()
         cumulative_prob = probs.cumsum()
-        r = scipy.rand()
+        r = np.random.rand()
         for j, p in enumerate(cumulative_prob):
             if r < p:
                 i = j
@@ -139,6 +141,6 @@ X = np.array([
     [4, 5, 0]
 ])
 
-D = np.array([[3, 4, 0], [1, 2, 0], [1, 2, 3]])
+D = np.array([[3, 4, 0], [1, 2, 0], [1, 2, 3], [65, 23, 1], [34, 12, 3], [12, 24, 0]])
 
-print(random.choices(D, k=2))
+print(k_meanspp(3, D, 'euclidean'))
