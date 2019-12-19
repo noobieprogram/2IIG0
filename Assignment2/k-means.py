@@ -29,7 +29,7 @@ def k_means(r: int, D: np.ndarray, init: str, dist: str):
     iterations = 0
     while True:
         iterations += 1
-        Y = clusterAssignments(X, D, dist)
+        Y, Y1 = clusterAssignments(X, D, dist)
         X = centroidsUpdate(Y, D, r)
 
         # stopping criterion is convergence
@@ -39,7 +39,7 @@ def k_means(r: int, D: np.ndarray, init: str, dist: str):
             old_centroids = X
 
     print("Number of iterations = ", iterations)  # count the number of iterations it takes until convergences
-    return X, Y
+    return X, Y, Y1
 
 
 def initClusters(r: int, D, init: str, dist="euclidean") -> np.ndarray:
@@ -113,9 +113,12 @@ def centroidsUpdate(Y, D, r: int) -> np.ndarray:
     return centroids
 
 
-def clusterAssignments(X, D, dist) -> dict:
+def clusterAssignments(X, D, dist):
     # we decided to use Y as a dictionary as it is far more efficient than a sparse matrix
     Y = {i: [] for i in range(len(X))}
+
+    # just to calculate NMI later
+    Y1 = np.zeros(len(D), dtype=int)
 
     for i in range(len(D)):
         distance = inf
@@ -123,7 +126,6 @@ def clusterAssignments(X, D, dist) -> dict:
         for j in range(0, len(X)):
             if dist == "euclidean":
                 dist = euclidean(np.array(D[i]), np.array(X[j]))
-
             else:
                 dist = cityblock(np.array(D[i]), np.array(X[j]))
 
@@ -132,15 +134,16 @@ def clusterAssignments(X, D, dist) -> dict:
                 cluster = j
 
         Y[cluster].append(D[i])
+        Y1[i] = cluster
 
-    return Y
+    return Y, Y1
 
 
 def main():
     # generate data
     D, y = make_blobs(n_samples=15000, centers=5, cluster_std=[3.9, 1.7, 1.5, 5.9, 2.8], n_features=2, random_state=10,
                       center_box=(-35.0, 25.0))
-    D2, y = make_blobs(n_samples=3500, cluster_std=[1.0, 2.5, 0.5], random_state=170, center_box=(-15.0, 5.0))
+    # D2, y = make_blobs(n_samples=3500, cluster_std=[1.0, 2.5, 0.5], random_state=170, center_box=(-15.0, 5.0))
 
     # plot('final', init, dist, X, True, D)
 
@@ -150,27 +153,23 @@ def main():
 
     for init in inits:
         for dist in dists:
+            print("/-----------------------------------/")
+            print("Dataset 1: {} initialization, {} distance".format(init, dist))
+
             # run k-means algorithm
             start = time()
-            X, Y = k_means(5, D, init, dist)
+            X, Y, Y1 = k_means(5, D, init, dist)
             print("Time taken = ", time() - start)
 
-            y_pred = [0] * len(D)
-            for i in range(len(D)):
-                for key in Y:
-                    for point in Y[key]:
-                        if np.array_equal(point, D[i]):
-                            y_pred[i] = key
-
-            nmi_score = nmi(y, y_pred)
+            nmi_score = nmi(y, Y1)
             print("NMI score = ", nmi_score)
 
             plt.clf()
             colors = ['#7f8c9b', '#68b1a7', '#e55ced', '#4b2e74', '#bcbb9e', '#f6f99e']
             for key in Y:
                 x = np.array(Y[key])[:, 0]
-                y = np.array(Y[key])[:, 1]
-                plt.scatter(x, y, color=colors[key])
+                y1 = np.array(Y[key])[:, 1]
+                plt.scatter(x, y1, color=colors[key])
 
             # plot centroids
             plt.scatter(X[:, 0], X[:, 1], color='#000000')
