@@ -5,10 +5,22 @@ from math import inf
 from scipy.spatial.distance import cityblock, euclidean
 from sklearn.datasets.samples_generator import make_blobs
 
+LABEL_COLOR_MAP = {
+    0: 'b',
+    1: 'g',
+    2: 'r',
+    3: 'c',
+    4: 'm',
+    5: 'y',
+    6: 'k',
+    7: 'w'
+}
+
 
 def plot(where, init, dist, X, clear=False, D=None):
     Xx = X[:, 0]
     Xy = X[:, 1]
+    # label_color = [LABEL_COLOR_MAP[l] for l in y]
     if clear:
         plt.clf()
         plt.scatter(D[:, 0], D[:, 1])
@@ -95,32 +107,27 @@ def k_meanspp(r: int, D: np.ndarray, dist: str) -> np.ndarray:
 # update the centroids
 def centroidsUpdate(Y, D, r: int) -> np.ndarray:
     centroids = np.zeros(shape=(r, len(D[0])))
-    Y = np.matrix.transpose(Y)  # n*r matrix -> r*n matrix for convenience
     index = 0
-    for cluster in Y:  # looping over each cluster
-        this_cluster = []
-        for j in range(len(cluster)):
-            if cluster[j] == 1:
-                this_cluster.append(j)  # D[j] was assigned to this cluster
-
-        sum_points = [0] * len(D[0])
-        for data in this_cluster:
-            for i in range(len(D[data])):
-                sum_points[i] += D[data][i]
-
-        # if this cluster has no points assigned to it, we continue
-        if (len(this_cluster)) == 0:
+    for key in Y:  # looping over each cluster
+        # if this cluster has no points assigned to it, we skip
+        if (len(Y[key])) == 0:
             continue
-        sum_points = [x / len(this_cluster) for x in sum_points]
+        # else we continue
+        sum_points = [0] * len(D[0])
+        for point in Y[key]:
+            for i in range(len(point)):
+                sum_points[i] += point[i]
+
+        sum_points = [x / len(Y[key]) for x in sum_points]
         centroids[index] = np.array(sum_points)
         index += 1
 
     return centroids
 
 
-def clusterAssignments(X, D, dist) -> np.ndarray:
-    # probably more efficient to use dictionaries but assignment wants to use a matrix
-    Y = np.zeros(shape=(len(D), len(X)), dtype=int)
+def clusterAssignments(X, D, dist) -> dict:
+    # we decided to use Y as a dictionary as it is far more efficient than a sparse matrix
+    Y = {i: [] for i in range(len(X))}
 
     for i in range(len(D)):
         distance = inf
@@ -135,7 +142,8 @@ def clusterAssignments(X, D, dist) -> np.ndarray:
             if dist < distance:
                 distance = dist
                 cluster = j
-        Y[i][cluster] = 1
+
+        Y[cluster].append(D[i])
 
     return Y
 
@@ -161,6 +169,10 @@ def main():
 
     # plot the final centroids and save
     plot('final', init, dist, X, True, D)
+
+    # centers = initClusters(5, D, 'forgy', 'euclidean')
+    # Y = clusterAssignments(centers, D, 'euclidean')
+    # print(Y.keys())
 
 
 main()
