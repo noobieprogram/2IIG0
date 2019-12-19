@@ -6,15 +6,22 @@ from scipy.spatial.distance import cityblock, euclidean
 from sklearn.datasets.samples_generator import make_blobs
 
 
-def k_means(r: int, D: np.ndarray, init: str, dist: str):
-    X = initClusters(r, D, init, dist)
+def plot(where, init, dist, X, clear=False, D=None):
     Xx = X[:, 0]
     Xy = X[:, 1]
+    if clear:
+        plt.clf()
+        plt.scatter(D[:, 0], D[:, 1])
     plt.scatter(Xx, Xy)
-    name = "-{}-{}".format(init, dist)
+    name = "-{}-{}-{}".format(where, init, dist)
     plt.savefig(
-        "/Users/abdullahsaeed/OneDrive - TU Eindhoven/TU-e/Year 3/Data mining and machine learning 2IIG0/Assignment 2/initial{}.png".format(
+        "/Users/abdullahsaeed/OneDrive - TU Eindhoven/TU-e/Year 3/Data mining and machine learning 2IIG0/Assignment 2/{}.png".format(
             name))
+
+
+def k_means(r: int, D: np.ndarray, init: str, dist: str):
+    X = initClusters(r, D, init, dist)
+    plot('initial', init, dist, X)
     old_centroids = None
     iterations = 0
     while True:
@@ -144,29 +151,16 @@ def main():
                         random_state=170, center_box=(-15.0, 5.0))
 
     # plot generated data and save to disk
-    Dx = D[:, 0]
-    Dy = D[:, 1]
-    init = "random"
+    init = "forgy"
     dist = "euclidean"
-    plt.scatter(Dx, Dy)
-    name = "-{}-{}".format(init, dist)
-    plt.savefig(
-        "/Users/abdullahsaeed/OneDrive - TU Eindhoven/TU-e/Year 3/Data mining and machine learning 2IIG0/Assignment 2/raw{}.png".format(
-            name))
+    plot('raw', init, dist, D)
 
     # run k-means algorithm
     r = 5
     X, Y = k_means(r, D, init, dist)
 
     # plot the final centroids and save
-    Xx = X[:, 0]
-    Xy = X[:, 1]
-    name = "-{}-{}".format(init, dist)
-    plt.clf()
-    plt.scatter(Xx, Xy)
-    plt.savefig(
-        "/Users/abdullahsaeed/OneDrive - TU Eindhoven/TU-e/Year 3/Data mining and machine learning 2IIG0/Assignment 2/centroids{}.png".format(
-            name))
+    plot('final', init, dist, X, True, D)
 
 
 main()
