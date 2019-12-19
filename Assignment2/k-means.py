@@ -8,14 +8,17 @@ from sklearn.datasets.samples_generator import make_blobs
 
 def k_means(r: int, D: np.ndarray, init: str, dist: str):
     X = initClusters(r, D, init, dist)
-    iterations = 0
+    Xx = X[:, 0]
+    Xy = X[:, 1]
+    plt.scatter(Xx, Xy)
+    plt.savefig("/Users/abdullahsaeed/OneDrive - TU Eindhoven/TU-e/Year 3/Data mining and machine learning 2IIG0/Assignment 2/initial.png")
     old_centroids = None
-    while iterations < 1000:
+    iterations = 0
+    while True:
         print(iterations)
         iterations += 1
         Y = clusterAssignments(X, D, dist)
-        X = centroidsUpdate(Y, D)
-        print("joe mama")
+        X = centroidsUpdate(Y, D, r)
 
         # stopping criterion is convergence
         if np.array_equal(X, old_centroids):
@@ -23,7 +26,7 @@ def k_means(r: int, D: np.ndarray, init: str, dist: str):
         else:
             old_centroids = X
 
-    print(iterations)
+
     return X, Y
 
 
@@ -47,6 +50,8 @@ def initClusters(r: int, D, init: str, dist="euclidean") -> np.ndarray:
                 sample.append(random.uniform(0, int(m)))
 
             centroids[i] = np.array(sample)
+
+        print(len(centroids) == r)
 
         return np.array(centroids)
 
@@ -79,8 +84,8 @@ def k_meanspp(r: int, D: np.ndarray, dist: str) -> np.ndarray:
 
 
 # update the centroids
-def centroidsUpdate(Y, D) -> np.ndarray:
-    centroids = np.zeros(shape=(len(Y), len(D[0])))
+def centroidsUpdate(Y, D, r: int) -> np.ndarray:
+    centroids = np.zeros(shape=(r, len(D[0])))
     Y = np.matrix.transpose(Y)  # n*r matrix -> r*n matrix for convenience
     index = 0
     for cluster in Y:  # looping over each cluster
@@ -105,7 +110,7 @@ def centroidsUpdate(Y, D) -> np.ndarray:
 
 
 def clusterAssignments(X, D, dist) -> np.ndarray:
-    Y = np.zeros(shape=(len(D), len(X)))
+    Y = np.zeros(shape=(len(D), len(X)), dtype=int)
 
     for i in range(len(D)):
         distance = inf
@@ -122,30 +127,31 @@ def clusterAssignments(X, D, dist) -> np.ndarray:
                 cluster = j
         Y[i][cluster] = 1
 
-
     return Y
 
 
 def main():
     # generate data
-    X, y = make_blobs(n_samples=15000, centers=5, cluster_std=[3.9, 1.7, 1.5, 5.9, 2.8], n_features=2, random_state=10,
+    D, y = make_blobs(n_samples=15000, centers=5, cluster_std=[3.9, 1.7, 1.5, 5.9, 2.8], n_features=2, random_state=10,
                       center_box=(-35.0, 25.0))
     # X = np.vstack((X[y == 0][:5000], X[y == 1][:4500],
     #                X[y == 2][:4000], X[y == 3][:2000], X[y == 4][:1000]))
     # y = np.hstack((y[y == 0][:5000], y[y == 1][:4500],
     #                y[y == 2][:4000], y[y == 3][:2000], y[y == 4][:1000]))
-    X2, y2 = make_blobs(n_samples=3500, cluster_std=[1.0, 2.5, 0.5],
+    D2, y2 = make_blobs(n_samples=3500, cluster_std=[1.0, 2.5, 0.5],
                         random_state=170, center_box=(-15.0, 5.0))
 
-    x = X[:, 0]
-    y = X[:, 1]
-    plt.scatter(x, y)
+    Dx = D[:, 0]
+    Dy = D[:, 1]
+    plt.scatter(Dx, Dy)
+    plt.savefig("/Users/abdullahsaeed/OneDrive - TU Eindhoven/TU-e/Year 3/Data mining and machine learning 2IIG0/Assignment 2/raw.png")
 
-    X1, Y = k_means(5, X, '++', 'euclidean')
-    centroids_x = X1[:, 0]
-    centroids_y = X1[:, 1]
-    plt.scatter(centroids_x, centroids_y)
-    plt.show()
+    X, Y = k_means(5, D, 'forgy', 'euclidean')
+
+    Xx = X[:, 0]
+    Xy = X[:, 1]
+    plt.scatter(Xx, Xy)
+    plt.savefig("/Users/abdullahsaeed/OneDrive - TU Eindhoven/TU-e/Year 3/Data mining and machine learning 2IIG0/Assignment 2/centroids.png")
 
 
 main()
