@@ -13,7 +13,7 @@ def plot(where, init, dist, X, clear=False, D=None):
         plt.clf()
         plt.scatter(D[:, 0], D[:, 1])
     plt.scatter(Xx, Xy)
-    name = "-{}-{}-{}".format(where, init, dist)
+    name = "{}-{}-{}".format(where, init, dist)
     plt.savefig(
         "/Users/abdullahsaeed/OneDrive - TU Eindhoven/TU-e/Year 3/Data mining and machine learning 2IIG0/Assignment 2/{}.png".format(
             name))
@@ -119,6 +119,7 @@ def centroidsUpdate(Y, D, r: int) -> np.ndarray:
 
 
 def clusterAssignments(X, D, dist) -> np.ndarray:
+    # probably more efficient to use dictionaries but assignment wants to use a matrix
     Y = np.zeros(shape=(len(D), len(X)), dtype=int)
 
     for i in range(len(D)):
@@ -147,13 +148,12 @@ def main():
     #                X[y == 2][:4000], X[y == 3][:2000], X[y == 4][:1000]))
     # y = np.hstack((y[y == 0][:5000], y[y == 1][:4500],
     #                y[y == 2][:4000], y[y == 3][:2000], y[y == 4][:1000]))
-    D2, y2 = make_blobs(n_samples=3500, cluster_std=[1.0, 2.5, 0.5],
-                        random_state=170, center_box=(-15.0, 5.0))
+    D2, y2 = make_blobs(n_samples=3500, cluster_std=[1.0, 2.5, 0.5], random_state=170, center_box=(-15.0, 5.0))
 
     # plot generated data and save to disk
     init = "forgy"
     dist = "euclidean"
-    plot('raw', init, dist, D)
+    plot('raw1', init, dist, D)
 
     # run k-means algorithm
     r = 5
