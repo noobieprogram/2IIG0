@@ -32,7 +32,7 @@ def sim_knn(D, k):
 
     k=k[1]
     
-    W = kneighbors_graph(D, k, mode='distance',
+    W = kneighbors_graph(D, k, mode='connectivity',
                          include_self=False).toarray()
     W = 0.5 * (W + W.T) # make matrix symmetric
     
@@ -68,8 +68,8 @@ def laplacian(W):
 values = {
     0: (0.3, 80),
     1: (0.4, 120),
-    2: (3.6, 250),
-    3: (1.31, 232)
+    2: (3.6, 50),
+    3: (1.3, 30)
 }
 
 def spectral_clustering(r, D, sim, laplacian, k):
@@ -91,7 +91,11 @@ def spectral_clustering(r, D, sim, laplacian, k):
     y = kmeans.labels_
     plt.scatter(D[:, 0], D[:, 1], c=y, cmap='viridis', alpha=0.5)
     
+    typ = "eps"
+    name = "aniso"
+    plt.title("{} dataset (sim: {} | param: {})".format(name, typ, str(k[0])))
+    plt.savefig("{}-{}.png".format(name, typ))
     return y
 
-i = 0
+i = 3
 spectral_clustering(datasets[i][1], datasets[i][0][0], sim_eps, laplacian, k=values[i])
