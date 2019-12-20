@@ -2,8 +2,7 @@ from data_ex3 import make_datasets
 
 import numpy as np
 from sklearn.neighbors import radius_neighbors_graph, kneighbors_graph
-from sklearn.cluster import SpectralClustering
-from scipy.cluster.vq import kmeans2
+from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import networkx as nx
 
@@ -70,7 +69,7 @@ values = {
     0: (0.3, 80),
     1: (0.4, 100),
     2: (3.6, 250),
-    3: (1.5, 40) # eps not good atm
+    3: (1.31, 40)
 }
 
 def spectral_clustering(r, D, sim, laplacian, k):
@@ -87,8 +86,9 @@ def spectral_clustering(r, D, sim, laplacian, k):
     W = sim(D, k) # weighted adjacency matrix of D, computed by the sim function
     L = laplacian(W) # symmetric laplacian of W
     w, v = np.linalg.eigh(L) # compute eig. values w and eig. vectors v
-    y = kmeans2(v[:, 1:r], r)[1] # get the first r eigenvectors
-    
+    # y = kmeans2(v[:, 1:r], r)[1]
+    kmeans = KMeans(n_clusters=r, random_state=0).fit(v[:, 1:r])
+    y = kmeans.labels_
     plt.scatter(D[:, 0], D[:, 1], c=y, cmap='viridis')
     return y
 
