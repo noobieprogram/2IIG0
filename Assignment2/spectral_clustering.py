@@ -38,13 +38,14 @@ import networkx as nx
 def check_symmetric(a, rtol=1e-05, atol=1e-08):
     return np.allclose(a, a.T, rtol=rtol, atol=atol)
 
-def sim_eps(D, e):
+def sim_eps(D, k):
     """
     Returns the weighted adjacency matrix
     of the e-neighborhood graph of data matrix D
     """
-    
-    W = radius_neighbors_graph(D, e, mode='connectivity',
+    k = k[0]
+
+    W = radius_neighbors_graph(D, k, mode='connectivity',
                            include_self=False).toarray()
 
     print("sym eps:", check_symmetric(W))
@@ -56,6 +57,8 @@ def sim_knn(D, k):
     Returns the weighted adjacency matrix
     of the k-NN graph of data matrix D
     """
+
+    k=k[1]
     
     W = kneighbors_graph(D, k, mode='connectivity',
                          include_self=False).toarray()
@@ -83,7 +86,7 @@ def laplacian(W):
     L_sym = np.dot(D, W).dot(D)
     L_sym = np.identity(n)-L_sym
     
-    print("sym laplacian:",check_symmetric(L))
+    print("sym laplacian:",check_symmetric(L_sym))
 
     return L_sym
 
@@ -111,8 +114,9 @@ def spectral_clustering(r, D, sim, laplacian, k):
     L = laplacian(W) # symmetric laplacian of W
     w, v = np.linalg.eigh(L) # compute eig. values w and eig. vectors v
     y = kmeans2(v[:, 1:r], r)[1]
-
+    
+    plt.scatter(D[:, 0], D[:, 1], c=y, cmap='viridis')
     return y
 
 i = 0
-spectral_clustering(_datasets[i][1], _datasets[i][0][0], sim_eps, laplacian, k=1.6)
+spectral_clustering(_datasets[i][1], _datasets[i][0][0], sim_knn, laplacian, k=values[i])
