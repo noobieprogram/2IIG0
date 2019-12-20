@@ -22,7 +22,6 @@ def sim_eps(D, k):
                            include_self=False).toarray()
 
     print("sym eps:", check_symmetric(W))
-
     return W
 
 def sim_knn(D, k):
@@ -33,11 +32,12 @@ def sim_knn(D, k):
 
     k=k[1]
     
-    W = kneighbors_graph(D, k, mode='connectivity',
+    W = kneighbors_graph(D, k, mode='distance',
                          include_self=False).toarray()
-    W = 0.5 * (W + W.T)
+    W = 0.5 * (W + W.T) # make matrix symmetric
     
     print("sym knn:",check_symmetric(W))
+    print(W)
     
     return W
 
@@ -67,9 +67,9 @@ def laplacian(W):
 # dataset_num: (eps, knn)
 values = {
     0: (0.3, 80),
-    1: (0.4, 100),
+    1: (0.4, 120),
     2: (3.6, 250),
-    3: (1.31, 40)
+    3: (1.31, 232)
 }
 
 def spectral_clustering(r, D, sim, laplacian, k):
@@ -89,8 +89,9 @@ def spectral_clustering(r, D, sim, laplacian, k):
     # y = kmeans2(v[:, 1:r], r)[1]
     kmeans = KMeans(n_clusters=r, random_state=0).fit(v[:, 1:r])
     y = kmeans.labels_
-    plt.scatter(D[:, 0], D[:, 1], c=y, cmap='viridis')
+    plt.scatter(D[:, 0], D[:, 1], c=y, cmap='viridis', alpha=0.5)
+    
     return y
 
 i = 0
-spectral_clustering(datasets[i][1], datasets[i][0][0], sim_knn, laplacian, k=values[i])
+spectral_clustering(datasets[i][1], datasets[i][0][0], sim_eps, laplacian, k=values[i])
