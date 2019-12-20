@@ -8,28 +8,29 @@ from sklearn.datasets.samples_generator import make_blobs
 from sklearn.metrics import normalized_mutual_info_score as nmi
 
 
-def plot(where, init, dist, X, clear=False, D=None):
-    Xx = X[:, 0]
-    Xy = X[:, 1]
-    # label_color = [LABEL_COLOR_MAP[l] for l in y]
-    if clear:
-        plt.clf()
-    plt.scatter(D[:, 0], D[:, 1])
-    plt.scatter(Xx, Xy)
-    name = "{}-{}-{}".format(where, init, dist)
-    plt.savefig(
-        "/Users/abdullahsaeed/OneDrive - TU Eindhoven/TU-e/Year 3/Data mining and machine learning 2IIG0/Assignment 2/{}.png".format(
-            name))
-
-
 def k_means(r: int, D: np.ndarray, init: str, dist: str):
     X = initClusters(r, D, init, dist)
-    plot('initial', init, dist, X, D=D)
     old_centroids = None
     iterations = 0
     while True:
         iterations += 1
         Y, Y1 = clusterAssignments(X, D, dist)
+
+        # plt.clf()
+        # colors = ['#7f8c9b', '#68b1a7', '#e55ced', '#4b2e74', '#bcbb9e', '#f6f99e']
+        # for key in Y:
+        #     x = np.array(Y[key])[:, 0]
+        #     y1 = np.array(Y[key])[:, 1]
+        #     plt.scatter(x, y1, color=colors[key])
+        #
+        # # plot centroids
+        # plt.scatter(X[:, 0], X[:, 1], color='#000000')
+        # # save plot
+        # name = "{}-{}-{}-{}".format(iterations, 'final', init, dist)
+        # plt.savefig(
+        #     "/Users/abdullahsaeed/OneDrive - TU Eindhoven/TU-e/Year 3/Data mining and machine learning 2IIG0/Assignment 2/{}.png".format(
+        #         name))
+
         X = centroidsUpdate(Y, D, r)
 
         # stopping criterion is convergence
@@ -50,10 +51,8 @@ def initClusters(r: int, D, init: str, dist="euclidean") -> np.ndarray:
         # find the maximum value for each dimension
         # in order to draw random samples from this space
         maxes = [0] * len(D[0])
-        for data in D:
-            for i in range(len(data)):
-                if data[i] > maxes[i]:
-                    maxes[i] = data[i]
+        for i in range(len(maxes)):
+            maxes[i] = max(D[:, i])
 
         # generate r random points
         for i in range(r):
@@ -141,11 +140,9 @@ def clusterAssignments(X, D, dist):
 
 def main():
     # generate data
-    D, y = make_blobs(n_samples=15000, centers=5, cluster_std=[3.9, 1.7, 1.5, 5.9, 2.8], n_features=2, random_state=10,
-                      center_box=(-35.0, 25.0))
-    # D2, y = make_blobs(n_samples=3500, cluster_std=[1.0, 2.5, 0.5], random_state=170, center_box=(-15.0, 5.0))
-
-    # plot('final', init, dist, X, True, D)
+    # D, y = make_blobs(n_samples=15000, centers=5, cluster_std=[3.9, 1.7, 1.5, 5.9, 2.8], n_features=2, random_state=10,
+    #                   center_box=(-35.0, 25.0))
+    D, y = make_blobs(n_samples=3500, cluster_std=[1.0, 2.5, 0.5], random_state=170, center_box=(-15.0, 5.0))
 
     # plot the final clusters
     inits = ["random", "forgy", "k-means++"]
@@ -158,7 +155,7 @@ def main():
 
             # run k-means algorithm
             start = time()
-            X, Y, Y1 = k_means(5, D, init, dist)
+            X, Y, Y1 = k_means(3, D, init, dist)
             print("Time taken = ", time() - start)
 
             nmi_score = nmi(y, Y1)

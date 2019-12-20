@@ -1,0 +1,64 @@
+
+/-----------------------------------/
+Dataset 1: random initialization, euclidean distance
+Number of iterations =  21
+Time taken =  22.484281063079834
+NMI score =  0.8568358476712551
+/-----------------------------------/
+Dataset 1: random initialization, manhattan distance
+Number of iterations =  28
+Time taken =  28.05856204032898
+NMI score =  0.8603682974855171
+/-----------------------------------/
+Dataset 1: forgy initialization, euclidean distance
+Number of iterations =  5
+Time taken =  5.222471237182617
+NMI score =  0.9850652559285717
+/-----------------------------------/
+Dataset 1: forgy initialization, manhattan distance
+Number of iterations =  11
+Time taken =  11.081678867340088
+NMI score =  0.7315665040312401
+/-----------------------------------/
+Dataset 1: k-means++ initialization, euclidean distance
+Number of iterations =  9
+Time taken =  11.857217788696289
+NMI score =  0.856840102325062
+/-----------------------------------/
+Dataset 1: k-means++ initialization, manhattan distance
+Number of iterations =  12
+Time taken =  13.463547945022583
+NMI score =  0.9850652559285717
+
+
+% Dataset 2
+
+Dataset 2: random initialization, euclidean distance
+Number of iterations =  29
+Time taken =  7.209990739822388
+NMI score =  0.7700490389654745
+/-----------------------------------/
+Dataset 2: random initialization, manhattan distance
+Number of iterations =  18
+Time taken =  4.435916185379028
+NMI score =  0.7695632315067726
+/-----------------------------------/
+Dataset 2: forgy initialization, euclidean distance
+Number of iterations =  24
+Time taken =  5.915392875671387
+NMI score =  0.770662546343927
+/-----------------------------------/
+Dataset 2: forgy initialization, manhattan distance
+Number of iterations =  13
+Time taken =  3.250492811203003
+NMI score =  0.7707051741737091
+/-----------------------------------/
+Dataset 2: k-means++ initialization, euclidean distance
+Number of iterations =  20
+Time taken =  5.554465055465698
+NMI score =  0.6981778236036589
+/-----------------------------------/
+Dataset 2: k-means++ initialization, manhattan distance
+Number of iterations =  26
+Time taken =  6.692288875579834
+NMI score =  0.7693171502990065
