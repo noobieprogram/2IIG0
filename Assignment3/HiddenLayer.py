@@ -25,14 +25,15 @@ class HiddenLayer:
 
 
 class Neuron:
-    def __init__(self, incoming, activation, bias=0):
+    def __init__(self, incoming, activation, bias=0.5):
         """
         Each neuron has a certain bias and maintains a set of weights
         corresponding to the each incoming connection. Weights is randomly initialized.
+        Bias can be adjusted to give reasonable output values.
         """
         self.bias = bias
         self.input = incoming
-        # random weights for now
+        # random weights for now, but can be adjusted for reasonable output values
         self.weights = [random() for i in range(len(incoming))]
         # value before activation function
         self.value = self.calculate_value(incoming)
