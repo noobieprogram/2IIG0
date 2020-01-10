@@ -33,7 +33,7 @@ class Neuron:
         self.bias = bias
         self.input = incoming
         # random weights for now
-        self.weights = [0.5 for i in range(len(incoming))]
+        self.weights = [random() for i in range(len(incoming))]
         # value before activation function
         self.value = self.calculate_value(incoming)
         # activation value
@@ -52,7 +52,7 @@ class Neuron:
 
     @classmethod
     def relu(cls, value):
-        return max(0.0, value)
+        return max(0.01*value, value)
 
     @classmethod
     def sigmoid(cls, x):
