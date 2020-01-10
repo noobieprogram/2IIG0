@@ -1,43 +1,48 @@
+import numpy as np
 from random import random
 
 
 class NeuralLayer:
-    num_neurons = 10
-    activation = 'relu'
+    """
+    Represents a hidden layer in the network. It maintains the neurons 
+    in it and the activation values for those neurons. 
+    Incoming values is a property of the neural layer and not
+    a neuron.
+    """
 
-    def __index__(self):
-        neurons = [Neuron(10) for i in range(NeuralLayer.num_neurons)]
+    def __init__(self, incoming, n = 10, activation="relu"):
+        # initialize n neurons
+        self.neurons = [Neuron(len(incoming), activation) for i in range(n)]
+        self.activation = activation
+        self.incoming = incoming
+        self.activation_values = 0
 
-    def update(self, activation):
-        pass
+    def set_activation(self):
+        self.activation_values = [neuron.activation for neuron in self.neurons]
 
+    def get_activation(self):
+        return self.activation_values
 
 class Neuron:
-
-    def __init__(self, incoming, bias=0):
+    def __init__(self, incoming, activation, bias=0):
         """
         Each neuron has a certain bias and maintains a set of weights
         corresponding to the each incoming connection. Weights is randomly initialized.
         """
         self.bias = bias
-        # initialize random weights for all incoming connections
         self.weights = [random() for i in range(incoming)]
-        self.value = 0
+        # value before activation function
+        self.value = self.calculate_value(incoming)
+        # activation value
+        self.activation = self.activation(activation)
 
-    def calculate_value(self, incoming_values) -> None:
-        if len(incoming_values) != len(self.weights):
-            raise Exception("Incorrect input provided")
+    def calculate_value(self, incoming) -> None:
+        return sum(np.multiply(self.weights, incoming)) - self.bias
 
-        value = 0
-        for i in range(incoming_values):
-            value += self.weights[i]*incoming_values[i]
-
-        self.value = value
-
-    def calculate_activation(self, activation):
+    def calculate_activation(self, activation) -> None:
         # we decided to use relu as the activation function but this code is just
         # to help scalability
-        if activation == 'relu':
+        if activation == "relu":
             return Neuron.relu(self.value)
 
     @classmethod
