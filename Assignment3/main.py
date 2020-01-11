@@ -28,5 +28,6 @@ for data in inputs:
     output = Neuron(h2.activation_values, "sigmoid")
     print(output.activation_value)
 
+
 def backprop():
     pass

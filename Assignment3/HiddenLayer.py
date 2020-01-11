@@ -51,6 +51,9 @@ class Neuron:
         elif activation == "sigmoid":
             return Neuron.sigmoid(self.value)
 
+    def set_bias(self, bias):
+        self.bias = bias
+
     @classmethod
     def relu(cls, value):
         return max(0, value)
