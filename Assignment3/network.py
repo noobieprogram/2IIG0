@@ -216,32 +216,32 @@ class Neuron:
     def calculate_pd_total_net_input_wrt_weight(self, index):
         return self.inputs[index]
 
-df = pd.read_excel('HW3train.xlsx')
-x0 = df['X_0'].tolist()
-x1 = df['X_1'].tolist()
-y = df['y'].tolist()
-training_sets = []
-for i in range(len(x0)):
-    training_sets.append([[x0[i],x1[i]],[y[i]]])
+# df = pd.read_excel('HW3train.xlsx')
+# x0 = df['X_0'].tolist()
+# x1 = df['X_1'].tolist()
+# y = df['y'].tolist()
+# training_sets = []
+# for i in range(len(x0)):
+#     training_sets.append([[x0[i],x1[i]],[y[i]]])
 
-df = pd.read_excel('HW3validate.xlsx')
-x0 = df['X_0'].tolist()
-x1 = df['X_1'].tolist()
-y = df['y'].tolist()
-validation_sets = []
-for i in range(len(x0)):
-    validation_sets.append([[x0[i],x1[i]],[y[i]]])
+# df = pd.read_excel('HW3validate.xlsx')
+# x0 = df['X_0'].tolist()
+# x1 = df['X_1'].tolist()
+# y = df['y'].tolist()
+# validation_sets = []
+# for i in range(len(x0)):
+#     validation_sets.append([[x0[i],x1[i]],[y[i]]])
 
-nn = NeuralNetwork(len(training_sets[0][0]), 10, 10, len(training_sets[0][1]))
-prev_error = 2
-error = 1
-iteration = 1
-while error < prev_error:
-    prev_error = error
-    nn.train(training_sets)
-    error = nn.calculate_total_error(training_sets)
-    print(iteration, error)
-    iteration += 1
-nn.undo()
+# nn = NeuralNetwork(len(training_sets[0][0]), 10, 10, len(training_sets[0][1]))
+# prev_error = 2
+# error = 1
+# iteration = 1
+# while error < prev_error:
+#     prev_error = error
+#     nn.train(training_sets)
+#     error = nn.calculate_total_error(training_sets)
+#     print(iteration, error)
+#     iteration += 1
+# nn.undo()
 
-print("Validation sets: ", nn.calculate_total_error(validation_sets))
+# print("Validation sets: ", nn.calculate_total_error(validation_sets))
