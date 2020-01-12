@@ -3,9 +3,8 @@ import math
 import pandas as pd
 
 class NeuralNetwork:
-    LEARNING_RATE = 0.5
 
-    def __init__(self, num_inputs, num_hidden_1, num_hidden_2, num_outputs, hidden_layer_1_weights = None, hidden_layer_1_activation = "sigmoid", hidden_layer_1_bias = None, hidden_layer_2_weights = None, hidden_layer_2_activation = "sigmoid", hidden_layer_2_bias = None, output_layer_weights = None, output_layer_activation = "sigmoid", output_layer_bias = None):
+    def __init__(self, num_inputs, num_hidden_1, num_hidden_2, num_outputs, hidden_layer_1_weights = None, hidden_layer_1_activation = "relu", hidden_layer_1_bias = None, hidden_layer_2_weights = None, hidden_layer_2_activation = "relu", hidden_layer_2_bias = None, output_layer_weights = None, output_layer_activation = "sigmoid", output_layer_bias = None):
         self.num_inputs = num_inputs
         self.hidden_layer_1 = NeuronLayer(num_hidden_1, hidden_layer_1_activation, hidden_layer_1_bias)
         self.hidden_layer_2 = NeuronLayer(num_hidden_2, hidden_layer_2_activation, hidden_layer_2_bias)
@@ -13,6 +12,7 @@ class NeuralNetwork:
         self.init_weights_from_inputs_to_hidden_layer_1_neurons(hidden_layer_1_weights)
         self.init_weights_from_hidden_layer_1_to_hidden_layer_2_neurons(hidden_layer_2_weights)
         self.init_weights_from_hidden_layer_2_neurons_to_output_layer_neurons(output_layer_weights)
+        self.LEARNING_RATE = 0.5
 
     def init_weights_from_inputs_to_hidden_layer_1_neurons(self, hidden_layer_1_weights):
         weight_num = 0
@@ -206,7 +206,7 @@ class Neuron:
 
     def calculate_pd_total_net_input_wrt_input(self):
         if self.activation == "relu":
-            if self.output > 0:
+            if self.output >= 0:
                 return 1
             else:
                 return 0
