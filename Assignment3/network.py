@@ -6,7 +6,7 @@ from sklearn.preprocessing import minmax_scale
 class NeuralNetwork:
 # loss: cross/mse/msa/kl/huber (https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html#id14)
 # activation: sigmoid/relu/leaky/elu/hyperbolic (lecture 11, slide 39)
-    def __init__(self, num_inputs, num_hidden_1, num_hidden_2, num_outputs, loss_function = "cross", hidden_layer_1_weights = None, hidden_layer_1_activation = "relu", hidden_layer_1_bias = None, hidden_layer_2_weights = None, hidden_layer_2_activation = "sigmoid", hidden_layer_2_bias = None, output_layer_weights = None, output_layer_activation = "sigmoid", output_layer_bias = None):
+    def __init__(self, num_inputs, num_hidden_1, num_hidden_2, num_outputs, loss_function = "cross", hidden_layer_1_weights = None, hidden_layer_1_activation = "elu", hidden_layer_1_bias = None, hidden_layer_2_weights = None, hidden_layer_2_activation = "sigmoid", hidden_layer_2_bias = None, output_layer_weights = None, output_layer_activation = "sigmoid", output_layer_bias = None):
         self.num_inputs = num_inputs
         self.loss_function = loss_function
         self.hidden_layer_1 = NeuronLayer(num_hidden_1, loss_function, hidden_layer_1_activation, hidden_layer_1_bias)
@@ -318,7 +318,7 @@ class Neuron:
             if total_net_input <= 0:
                 return a*(math.exp(total_net_input)-1)
             else:
-                return x
+                return total_net_input
         if self.activation == "hyperbolic":
             return math.tanh(total_net_input) # return (math.exp(total_net_input)-math.exp(-total_net_input))/(math.exp(total_net_input)+math.exp(-total_net_input))
 
@@ -334,12 +334,12 @@ class Neuron:
             else:
                 return -math.log(1 - self.output)
         if self.loss_function == "mae":
-            return math.absolute(self.output - target_output)
+            return abs(self.output - target_output)
         if self.loss_function == "kl":
-            return self.output * math.log(self.output / target_output)
+            return self.output * math.log(self.output / max(target_output,1e-9))
         if self.loss_function == "huber":
             d = 0.1
-            if math.abs(target_output - self.output) < d:
+            if abs(target_output - self.output) < d:
                 return 0.5 * (target_output - self.output) ** 2
             else:
                 return d * (target_output - self.output - 0.5 * d)
@@ -352,17 +352,16 @@ class Neuron:
                 return -1/self.output
             else:
                 return -1/(self.output-1)
-            return - target_output/self.output
         if self.loss_function == "mae":
             if self.output > target_output:
                 return 1
             else:
                 return -1
         if self.loss_function == "kl":
-            return math.log(self.output / target_output) + 1
+            return math.log(self.output / max(target_output,1e-9)) + 1
         if self.loss_function == "huber":
             d = 0.1
-            if math.abs(target_output - self.output) < d:
+            if abs(target_output - self.output) < d:
                 return - target_output + self.output
             else:
                 return - d
@@ -383,7 +382,7 @@ class Neuron:
                 return a
         if self.activation == "elu":
             a = 0.1
-            if total_net_input <= 0:
+            if self.output <= 0:
                 return self.output+a
             else:
                 return 1
@@ -429,4 +428,4 @@ print(nn.true_positive(validation_sets))
 print(nn.true_negative(validation_sets))
 print(nn.false_positive(validation_sets))
 print(nn.false_negative(validation_sets))
-# print(nn.count_correct(validation_sets))
+print(nn.count_correct(validation_sets))
