@@ -6,7 +6,7 @@ from sklearn.preprocessing import minmax_scale
 class NeuralNetwork:
 # loss: cross/mse/msa/kl/huber (https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html#id14)
 # activation: sigmoid/relu/leaky/elu/hyperbolic (lecture 11, slide 39)
-    def __init__(self, num_inputs, num_hidden_1, num_hidden_2, num_outputs, loss_function = "cross", hidden_layer_1_weights = None, hidden_layer_1_activation = "elu", hidden_layer_1_bias = None, hidden_layer_2_weights = None, hidden_layer_2_activation = "sigmoid", hidden_layer_2_bias = None, output_layer_weights = None, output_layer_activation = "sigmoid", output_layer_bias = None):
+    def __init__(self, num_inputs, num_hidden_1, num_hidden_2, num_outputs, loss_function = "cross", learning_rate=0.5, hidden_layer_1_weights = None, hidden_layer_1_activation = "elu", hidden_layer_1_bias = None, hidden_layer_2_weights = None, hidden_layer_2_activation = "sigmoid", hidden_layer_2_bias = None, output_layer_weights = None, output_layer_activation = "sigmoid", output_layer_bias = None):
         self.num_inputs = num_inputs
         self.loss_function = loss_function
         self.hidden_layer_1 = NeuronLayer(num_hidden_1, loss_function, hidden_layer_1_activation, hidden_layer_1_bias)
@@ -18,7 +18,7 @@ class NeuralNetwork:
         self.init_bias_from_inputs_to_hidden_layer_1_neurons(hidden_layer_1_bias)
         self.init_bias_from_hidden_layer_1_to_hidden_layer_2_neurons(hidden_layer_2_bias)
         self.init_bias_from_hidden_layer_2_neurons_to_output_layer_neurons(output_layer_bias)
-        self.LEARNING_RATE = 0.5
+        self.LEARNING_RATE = learning_rate
 
     def init_weights_from_inputs_to_hidden_layer_1_neurons(self, hidden_layer_1_weights):
         weight_num = 0
@@ -391,41 +391,3 @@ class Neuron:
 
     def calculate_pd_total_net_input_wrt_weight(self, index):
         return self.inputs[index]
-
-df = pd.read_excel('HW3train.xlsx')
-x0 = minmax_scale(df['X_0'].tolist())
-x1 = minmax_scale(df['X_1'].tolist())
-y = df['y'].tolist()
-training_sets = []
-for i in range(len(x0)):
-    training_sets.append([[x0[i],x1[i]],[y[i]]])
-
-df = pd.read_excel('HW3validate.xlsx')
-x0 = minmax_scale(df['X_0'].tolist())
-x1 = minmax_scale(df['X_1'].tolist())
-y = df['y'].tolist()
-validation_sets = []
-for i in range(len(x0)):
-    validation_sets.append([[x0[i],x1[i]],[y[i]]])
-
-nn = NeuralNetwork(len(training_sets[0][0]), 10, 10, len(training_sets[0][1]))
-prev_error = 2
-error = 1
-iteration = 1
-while error < prev_error:
-    prev_error = error
-    nn.train(training_sets)
-    error = nn.calculate_total_error(training_sets)
-    print(iteration, error)
-    iteration += 1
-    if iteration == 1001:
-        break
-nn.undo()
-
-print("Validation sets: ", nn.calculate_total_error(validation_sets))
-nn.print_expected_predicted(validation_sets)
-print(nn.true_positive(validation_sets))
-print(nn.true_negative(validation_sets))
-print(nn.false_positive(validation_sets))
-print(nn.false_negative(validation_sets))
-print(nn.count_correct(validation_sets))
