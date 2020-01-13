@@ -2,3 +2,8 @@
 !.gitignore
 Assignment2/__pycache__/data_ex3.cpython-38.pyc
 *.pyc
+Assignment3/network2.py
+Assignment3/network3.py
+Assignment3/test.ipynb
+Assignment3/test3.ipynb
+Assignment3/network2.py
