@@ -1,12 +1,15 @@
 import random
 import math
+import numpy as np
 import pandas as pd
 from sklearn.preprocessing import minmax_scale
 
 class NeuralNetwork:
 # loss: cross/mse/msa/kl/huber (https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html#id14)
 # activation: sigmoid/relu/leaky/elu/hyperbolic (lecture 11, slide 39)
-    def __init__(self, num_inputs, num_hidden_1, num_hidden_2, num_outputs, loss_function = "cross", learning_rate=0.5, hidden_layer_1_weights = None, hidden_layer_1_activation = "elu", hidden_layer_1_bias = None, hidden_layer_2_weights = None, hidden_layer_2_activation = "sigmoid", hidden_layer_2_bias = None, output_layer_weights = None, output_layer_activation = "sigmoid", output_layer_bias = None):
+# std is standard deviation from exercise 6
+    def __init__(self, num_inputs, num_hidden_1, num_hidden_2, num_outputs, std , loss_function = "cross", learning_rate=0.25, hidden_layer_1_weights = None, hidden_layer_1_activation = "elu", hidden_layer_1_bias = None, hidden_layer_2_weights = None, hidden_layer_2_activation = "sigmoid", hidden_layer_2_bias = None, output_layer_weights = None, output_layer_activation = "sigmoid", output_layer_bias = None):
+        self.std = std
         self.num_inputs = num_inputs
         self.loss_function = loss_function
         self.hidden_layer_1 = NeuronLayer(num_hidden_1, loss_function, hidden_layer_1_activation, hidden_layer_1_bias)
@@ -25,7 +28,7 @@ class NeuralNetwork:
         for h in range(len(self.hidden_layer_1.neurons)):
             for i in range(self.num_inputs):
                 if not hidden_layer_1_weights:
-                    self.hidden_layer_1.neurons[h].weights.append(random.random()*2-1)
+                    self.hidden_layer_1.neurons[h].weights.append(np.random.normal(0, self.std))
                 else:
                     self.hidden_layer_1.neurons[h].weights.append(hidden_layer_1_weights[weight_num])
                 weight_num += 1
@@ -36,7 +39,7 @@ class NeuralNetwork:
         for h in range(len(self.hidden_layer_2.neurons)):
             for i in range(len(self.hidden_layer_1.neurons)):
                 if not hidden_layer_2_weights:
-                    self.hidden_layer_2.neurons[h].weights.append(random.random()*2-1)
+                    self.hidden_layer_2.neurons[h].weights.append(np.random.normal(0, self.std))
                 else:
                     self.hidden_layer_2.neurons[h].weights.append(hidden_layer_2_weights[weight_num])
                 weight_num += 1
@@ -47,7 +50,7 @@ class NeuralNetwork:
         for o in range(len(self.output_layer.neurons)):
             for h in range(len(self.hidden_layer_2.neurons)):
                 if not output_layer_weights:
-                    self.output_layer.neurons[o].weights.append(random.random()*2-1)
+                    self.output_layer.neurons[o].weights.append(np.random.normal(0, self.std))
                 else:
                     self.output_layer.neurons[o].weights.append(output_layer_weights[weight_num])
                 weight_num += 1
@@ -57,7 +60,7 @@ class NeuralNetwork:
         bias_num = 0
         for h in range(len(self.hidden_layer_1.neurons)):
             if not hidden_layer_1_bias:
-                self.hidden_layer_1.neurons[h].bias = random.random()*2-1
+                self.hidden_layer_1.neurons[h].bias = np.random.normal(0, self.std)
             else:
                 self.hidden_layer_1.neurons[h].bias = hidden_layer_1_bias[bias_num]
             bias_num += 1
@@ -66,7 +69,7 @@ class NeuralNetwork:
         bias_num = 0
         for h in range(len(self.hidden_layer_2.neurons)):
             if not hidden_layer_2_bias:
-                self.hidden_layer_2.neurons[h].bias = random.random()*2-1
+                self.hidden_layer_2.neurons[h].bias = np.random.normal(0, self.std)
             else:
                 self.hidden_layer_2.neurons[h].bias = hidden_layer_2_bias[bias_num]
             bias_num += 1
@@ -75,7 +78,7 @@ class NeuralNetwork:
         bias_num = 0
         for o in range(len(self.output_layer.neurons)):
             if not output_layer_bias:
-                self.output_layer.neurons[o].bias = random.random()*2-1
+                self.output_layer.neurons[o].bias = np.random.normal(0, self.std)
             else:
                 self.output_layer.neurons[o].bias = output_layer_bias[bias_num]
             bias_num += 1
@@ -256,6 +259,26 @@ class NeuralNetwork:
                     count+=1
         return count
 
+
+    def get_outputs(self, inputs):
+        self.feed_forward(inputs)
+        list = []
+        temp = []
+        for h in range(len(self.hidden_layer_1.neurons)):
+            list.append(self.hidden_layer_1.neurons[h].output)
+
+
+        temp = []
+        for h in range(len(self.hidden_layer_2.neurons)):
+            list.append(self.hidden_layer_2.neurons[h].output)
+
+
+        temp = []
+        for o in range(len(self.output_layer.neurons)):
+            list.append(self.output_layer.neurons[o].output)
+
+        return list
+
 class NeuronLayer:
     def __init__(self, num_neurons, loss_function, activation, bias):
         self.loss_function = loss_function
@@ -264,6 +287,7 @@ class NeuronLayer:
         self.neurons = []
         for i in range(num_neurons):
             self.neurons.append(Neuron(self.loss_function, self.activation, self.bias))
+
 
     def inspect(self):
         print('Neurons:', len(self.neurons))
