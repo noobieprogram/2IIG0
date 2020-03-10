@@ -8,9 +8,9 @@ class NeuralNetwork:
 # loss: cross/mse/msa/kl/huber (https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html#id14)
 # activation: sigmoid/relu/leaky/elu/hyperbolic (lecture 11, slide 39)
 # std is standard deviation from exercise 6
-    def __init__(self, num_inputs, num_hidden_1, num_hidden_2, num_outputs, std , loss_function = "cross", learning_rate=0.25, hidden_layer_1_weights = None, hidden_layer_1_activation = "elu", hidden_layer_1_bias = None, hidden_layer_2_weights = None, hidden_layer_2_activation = "sigmoid", hidden_layer_2_bias = None, output_layer_weights = None, output_layer_activation = "sigmoid", output_layer_bias = None):
+    def __init__(self, num_inputs, num_hidden_1, num_hidden_2, num_outputs, std , loss_function = "cross", learning_rate=0.25, hidden_layer_1_weights = None, hidden_layer_1_activation = "relu", hidden_layer_1_bias = None, hidden_layer_2_weights = None, hidden_layer_2_activation = "sigmoid", hidden_layer_2_bias = None, output_layer_weights = None, output_layer_activation = "sigmoid", output_layer_bias = None):
         self.std = std
-        self.num_inputs = num_inputs
+        self.num_inputs = num_inputs 
         self.loss_function = loss_function
         self.hidden_layer_1 = NeuronLayer(num_hidden_1, loss_function, hidden_layer_1_activation, hidden_layer_1_bias)
         self.hidden_layer_2 = NeuronLayer(num_hidden_2, loss_function, hidden_layer_2_activation, hidden_layer_2_bias)
